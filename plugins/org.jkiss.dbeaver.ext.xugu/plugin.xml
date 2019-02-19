@@ -25,11 +25,11 @@
         <datasource
               class="org.jkiss.dbeaver.ext.xugu.XuguDataSourceProvider"
               description="Xugu connector"
-              icon="icons/oracle_icon.png"
+              icon="icons/xugu_icon.png"
               id="xugu"
               label="Xugu">
             <tree
-                  icon="icons/oracle_icon.png"
+                  icon="icons/xugu_icon.png"
                   label="Xugu data source"
                   path="xugu">
                 <folder type="org.jkiss.dbeaver.ext.xugu.model.XuguSchema" label="%tree.schemas.node.name" icon="#folder_schema" description="Database schemas">
@@ -269,30 +269,29 @@
                 <driver
                       class="com.xugu.cloudjdbc.Driver"
                       defaultPort="5138"
-                      description="Xugu JDBC driver. Doesn&apos;t require Xugu client."
-                      icon="icons/oracle_icon.png"
-                      id="xugu_conn"
+                      description="Xugu JDBC driver."
+                      icon="icons/xugu_icon.png"
+                      id="Xugu SQL Server 10.0"
                       label="Xugu"
                       promoted="true"
-                      propertiesURL="https://docs.Xugu.com/cd/B19306_01/java.102/b14355/urls.htm#i1070726"
                       sampleURL="jdbc:xugu://{host}[:{port}]/{database}"
                       useURL="false"
-                      webURL="http://www.xugu.com/technetwork/database/features/jdbc/">
+                      webURL="https://github.com/xugu-publish/jdbc-driver/tree/master/libsrc/">
                     <replace provider="generic" driver="xugu"/>
                     <replace provider="xugu" driver="xugu"/>
                     <replace provider="xugu" driver="xugu_oci"/>
 
-                    <property name="loginTimeout" value="20"/>
-                    <property name="useFetchSizeWithLongColumn" value="true"/>
+                    <property name="recv_mode" value="2"/>
+                    <property name="char_set" value="utf-8"/>
 
                     <!--<file path="maven:/com.Xugu.jdbc:ojdbc8:RELEASE" type="jar"/>-->
 
-                    <fileSource url="http://www.xugu.com/technetwork/database/features/jdbc/default-2280470.html" name="Xugu 10 drivers">
-                        <file name="cloudjdbc.jar" description="JDBC driver"/>
+                    <fileSource url="https://github.com/xugu-publish/jdbc-driver/tree/master/libsrc" name="Xugu 10 drivers">
+                        <file name="cloudjdbc-10.0.0.jar" description="Xugu JDBC driver."/>
                     </fileSource>
                    
                     <file type="license" path="drivers/xugu/LICENSE.txt" bundle="drivers.xugu"/>
-                    <file type="jar" path="drivers/xugu/cloudjdbc-11.0.0-build20190215153023.jar" bundle="drivers.xugu"/>
+                    <file type="jar" path="drivers/xugu/cloudjdbc-10.0.0.jar" bundle="drivers.xugu"/>
 
                 </driver>
             </drivers>
@@ -309,7 +308,7 @@
                 targetID="org.jkiss.dbeaver.ext.ui.newConnectionWizard"
                 label="%dialog.connection.header"
                 class="org.jkiss.dbeaver.ext.xugu.views.XuguConnectionPage"
-                icon="icons/oracle_icon.png">
+                icon="icons/xugu_icon.png">
         </view>
         <view
                 id="org.jkiss.dbeaver.ext.xugu.dataSourceEditorView"
@@ -572,7 +571,7 @@
         <page id="org.jkiss.dbeaver.preferences.xugu.main" class="org.jkiss.dbeaver.ext.xugu.views.PrefPageXugu" name="%page.org.jkiss.dbeaver.preferences.xugu.main.name">
             <enabledWhen>
                 <adapt type="org.jkiss.dbeaver.model.DBPDataSourceContainer">
-                    <test property="org.jkiss.dbeaver.core.datasourceContainer.driverId" value="xugu_conn"/>
+                    <test property="org.jkiss.dbeaver.core.datasourceContainer.driverId" value="Xugu SQL Server 10.0"/>
                 </adapt>
             </enabledWhen>
         </page>

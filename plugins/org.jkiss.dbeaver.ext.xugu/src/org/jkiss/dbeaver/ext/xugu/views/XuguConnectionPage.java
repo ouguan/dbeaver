@@ -69,7 +69,7 @@ public class XuguConnectionPage extends ConnectionPageAbstract implements ICompo
     private ControlsListener controlModifyListener;
     private XuguConstants.ConnectionType connectionType = XuguConstants.ConnectionType.BASIC;
 
-    private static ImageDescriptor logoImage = Activator.getImageDescriptor("icons/oracle_logo.png"); //$NON-NLS-1$
+    private static ImageDescriptor logoImage = Activator.getImageDescriptor("icons/xugu_logo.png"); //$NON-NLS-1$
     private TextWithOpenFolder tnsPathText;
 
     private boolean activated = false;
