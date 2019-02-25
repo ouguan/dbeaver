@@ -55,7 +55,22 @@ public class XuguConnectionPage extends ConnectionPageAbstract implements ICompo
     private Text dbText;
     private Text usernameText;
     private Text passwordText;
+<<<<<<< HEAD
     private ClientHomesSelector homesSelector;
+=======
+    private Combo tnsNameCombo;
+	private TabFolder connectionTypeFolder;
+    private ClientHomesSelector oraHomeSelector;
+    private Text connectionUrlText;
+    private Button osAuthCheck;
+
+    private ControlsListener controlModifyListener;
+    private XuguConstants.ConnectionType connectionType = XuguConstants.ConnectionType.BASIC;
+
+    private static ImageDescriptor logoImage = Activator.getImageDescriptor("icons/xugu_logo.png"); //$NON-NLS-1$
+    private TextWithOpenFolder tnsPathText;
+
+>>>>>>> refs/remotes/origin/master
     private boolean activated = false;
 
     private static ImageDescriptor Xugu_LOGO_IMG = Activator.getImageDescriptor("icons/Xugu_logo.png");

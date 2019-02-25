@@ -221,6 +221,7 @@
                     <replace provider="xugu" driver="xugu"/>
                     <replace provider="xugu" driver="xugu_oci"/>
 
+<<<<<<< HEAD
                 	<property name="recv_mode" value="2"/>  
                 	<property name="auto_commit" value="on"/>  
                 	<!-- <property name="lob_ret" value=""/> -->
@@ -232,6 +233,10 @@
                 	<!--	<property name="iscompatibleqx" value="false"/> -->
                		<!--	<property name="ips" value=""/> -->
                     <property name="char_set" value="utf8"/> 
+=======
+                    <property name="recv_mode" value="2"/>
+                    <property name="char_set" value="utf-8"/>
+>>>>>>> refs/remotes/origin/master
 
                     <!--<file path="maven:/com.Xugu.jdbc:ojdbc8:RELEASE" type="jar"/>-->
 
