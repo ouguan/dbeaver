@@ -98,10 +98,10 @@ public class XuguDataSourceProvider extends JDBCDataSourceProvider implements DB
             }
         } else {
             // Basic connection info specified
-            boolean isSID = XuguConnectionType.SID.name().equals(connectionInfo.getProviderProperty(XuguConstants.PROP_SID_SERVICE));
-            if (!isSID) {
-                url.append("//"); //$NON-NLS-1$
-            }
+//            boolean isSID = XuguConnectionType.SID.name().equals(connectionInfo.getProviderProperty(XuguConstants.PROP_SID_SERVICE));
+//            if (!isSID) {
+//                url.append("//"); //$NON-NLS-1$
+//            }
             if (!CommonUtils.isEmpty(connectionInfo.getHostName())) {
                 url.append(connectionInfo.getHostName());
             }
@@ -109,11 +109,11 @@ public class XuguDataSourceProvider extends JDBCDataSourceProvider implements DB
                 url.append(":"); //$NON-NLS-1$
                 url.append(connectionInfo.getHostPort());
             }
-            if (isSID) {
-                url.append(":"); //$NON-NLS-1$
-            } else {
+//            if (isSID) {
+//                url.append(":"); //$NON-NLS-1$
+//            } else {
                 url.append("/"); //$NON-NLS-1$
-            }
+//            }
             if (!CommonUtils.isEmpty(connectionInfo.getDatabaseName())) {
                 url.append(connectionInfo.getDatabaseName());
             }

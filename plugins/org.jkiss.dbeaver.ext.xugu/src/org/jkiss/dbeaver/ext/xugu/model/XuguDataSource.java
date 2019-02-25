@@ -22,6 +22,8 @@ import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.Log;
 import org.jkiss.dbeaver.ModelPreferences;
+import org.jkiss.dbeaver.ext.xugu.XuguExecuteSQL_SYSDBA;
+import org.jkiss.dbeaver.ext.xugu.XuguMessages;
 import org.jkiss.dbeaver.ext.xugu.model.plan.XuguPlanAnalyser;
 import org.jkiss.dbeaver.ext.xugu.model.session.XuguServerSessionManager;
 import org.jkiss.dbeaver.model.*;
@@ -70,7 +72,7 @@ public class XuguDataSource extends JDBCDataSource
     final ProfileCache profileCache = new ProfileCache();
     final RoleCache roleCache = new RoleCache();
 
-    private OracleOutputReader outputReader;
+    private xuguOutputReader outputReader;
     private XuguSchema publicSchema;
     private String activeSchemaName;
     private boolean isAdmin;
@@ -83,7 +85,7 @@ public class XuguDataSource extends JDBCDataSource
     public XuguDataSource(DBRProgressMonitor monitor, DBPDataSourceContainer container)
         throws DBException {
         super(monitor, container, new XuguSQLDialect());
-        this.outputReader = new OracleOutputReader();
+        this.outputReader = new xuguOutputReader();
     }
 
     @Override
@@ -129,13 +131,13 @@ public class XuguDataSource extends JDBCDataSource
 /*
         // Set tns admin directory
         DBPConnectionConfiguration connectionInfo = getContainer().getActualConnectionConfiguration();
-        String tnsPathProp = CommonUtils.toString(connectionInfo.getProviderProperty(OracleConstants.PROP_TNS_PATH));
+        String tnsPathProp = CommonUtils.toString(connectionInfo.getProviderProperty(xuguConstants.PROP_TNS_PATH));
         if (!CommonUtils.isEmpty(tnsPathProp)) {
-            System.setProperty(OracleConstants.VAR_ORACLE_NET_TNS_ADMIN, tnsPathProp);
+            System.setProperty(xuguConstants.VAR_xugu_NET_TNS_ADMIN, tnsPathProp);
         } else {
             DBPNativeClientLocation clientHome = getContainer().getNativeClientHome();
             if (clientHome != null) {
-                System.setProperty(OracleConstants.VAR_ORACLE_NET_TNS_ADMIN, new File(clientHome.getPath(), OCIUtils.TNSNAMES_FILE_PATH).getAbsolutePath());
+                System.setProperty(xuguConstants.VAR_xugu_NET_TNS_ADMIN, new File(clientHome.getPath(), OCIUtils.TNSNAMES_FILE_PATH).getAbsolutePath());
             }
         }
 */
@@ -145,7 +147,7 @@ public class XuguDataSource extends JDBCDataSource
         } catch (DBCException e) {
             if (e.getErrorCode() == XuguConstants.EC_PASSWORD_EXPIRED) {
                 // Here we could try to ask for expired password change
-                // This is supported  for thin driver since Oracle 12.2
+                // This is supported  for thin driver since xugu 12.2
                 if (changeExpiredPassword(monitor, purpose)) {
                     // Retry
                     return openConnection(monitor, remoteInstance, purpose);
@@ -156,7 +158,7 @@ public class XuguDataSource extends JDBCDataSource
     }
 
     private boolean changeExpiredPassword(DBRProgressMonitor monitor, String purpose) {
-        // Ref: https://stackoverflow.com/questions/21733300/oracle-password-expiry-and-grace-period-handling-using-java-oracle-jdbc
+        // Ref: https://stackoverflow.com/questions/21733300/xugu-password-expiry-and-grace-period-handling-using-java-xugu-jdbc
 
         DBPConnectionConfiguration connectionInfo = getContainer().getActualConnectionConfiguration();
         DBAPasswordChangeInfo passwordInfo = DBUserInterface.getInstance().promptUserPasswordChange("Password has expired. Set new password.", connectionInfo.getUserName(), connectionInfo.getUserPassword());
@@ -170,7 +172,7 @@ public class XuguDataSource extends JDBCDataSource
                 throw new DBException("You can't set empty password");
             }
             Properties connectProps = getAllConnectionProperties(monitor, purpose, connectionInfo);
-            connectProps.setProperty("oracle.jdbc.newPassword", passwordInfo.getNewPassword());
+            connectProps.setProperty("xugu.jdbc.newPassword", passwordInfo.getNewPassword());
 
             final String url = getConnectionURL(connectionInfo);
             monitor.subTask("Connecting for expired password change");
@@ -194,7 +196,7 @@ public class XuguDataSource extends JDBCDataSource
 
     protected void initializeContextState(@NotNull DBRProgressMonitor monitor, @NotNull JDBCExecutionContext context, boolean setActiveObject) throws DBCException {
         if (outputReader == null) {
-            outputReader = new OracleOutputReader();
+            outputReader = new xuguOutputReader();
         }
         // Enable DBMS output
         outputReader.enableServerOutput(
@@ -269,9 +271,7 @@ public class XuguDataSource extends JDBCDataSource
         Map<String, String> connectionsProps = new HashMap<>();
         if (!getContainer().getPreferenceStore().getBoolean(ModelPreferences.META_CLIENT_NAME_DISABLE)) {
             // Program name
-            String appName = DBUtils.getClientApplicationName(getContainer(), purpose);
-            appName = appName.replace('(', '_').replace(')', '_'); // Replace brackets - Oracle don't like them
-            connectionsProps.put("v$session.program", CommonUtils.truncateString(appName, 48));
+            connectionsProps.put("v$session.program", CommonUtils.truncateString(DBUtils.getClientApplicationName(getContainer(), purpose), 48));
         }
         if (CommonUtils.toBoolean(connectionInfo.getProviderProperty(XuguConstants.OS_AUTH_PROP))) {
             connectionsProps.put("v$session.osuser", System.getProperty(StandardConstants.ENV_USER_NAME));
@@ -385,17 +385,17 @@ public class XuguDataSource extends JDBCDataSource
         {
             try (JDBCSession session = DBUtils.openMetaSession(monitor, this, "Load data source meta info")) {
                 // Check DBA role
-                this.isAdmin = "YES".equals(
-                    JDBCUtils.queryString(
-                        session,
-                        "SELECT 'YES' FROM USER_ROLE_PRIVS WHERE GRANTED_ROLE='DBA'"));
-                this.isAdminVisible = isAdmin;
-                if (!isAdminVisible) {
-                    String showAdmin = connectionInfo.getProviderProperty(XuguConstants.PROP_ALWAYS_SHOW_DBA);
-                    if (showAdmin != null) {
-                        isAdminVisible = CommonUtils.getBoolean(showAdmin, false);
-                    }
-                }
+//                this.isAdmin = "YES".equals(
+//                    JDBCUtils.queryString(
+//                        session,
+//                        "SELECT 'YES' FROM USER_ROLE_PRIVS WHERE GRANTED_ROLE='SYSDBA'"));
+//                this.isAdminVisible = isAdmin;
+//                if (!isAdminVisible) {
+//                    String showAdmin = connectionInfo.getProviderProperty(XuguConstants.PROP_ALWAYS_SHOW_DBA);
+//                    if (showAdmin != null) {
+//                        isAdminVisible = CommonUtils.getBoolean(showAdmin, false);
+//                    }
+//                }
 
                 // Get active schema
                 this.activeSchemaName = XuguUtils.getCurrentSchema(session);
@@ -556,7 +556,7 @@ public class XuguDataSource extends JDBCDataSource
         if (driverSupportsQueryCancel()) {
             super.cancelStatementExecute(monitor, statement);
         } else {
-            // Oracle server doesn't support single query cancel?
+            // xugu server doesn't support single query cancel?
             // But we could try to cancel all
             try {
                 Connection connection = statement.getConnection().getOriginal();
@@ -644,7 +644,7 @@ public class XuguDataSource extends JDBCDataSource
                 final String newPlanTableName = candidateNames[0];
                 // Plan table not found - try to create new one
                 if (!UIUtils.confirmAction(
-                    "Oracle PLAN_TABLE missing",
+                    "xugu PLAN_TABLE missing",
                     "PLAN_TABLE not found in current user's session. " +
                         "Do you want DBeaver to create new PLAN_TABLE (" + newPlanTableName + ")?")) {
                     return null;
@@ -721,7 +721,7 @@ public class XuguDataSource extends JDBCDataSource
             }
         }
         if (error.getCause() != null) {
-            // Maybe OracleDatabaseException
+            // Maybe xuguDatabaseException
             try {
                 Object errorPosition = BeanUtils.readObjectProperty(error.getCause(), "errorPosition");
                 if (errorPosition instanceof Number) {
@@ -768,7 +768,7 @@ public class XuguDataSource extends JDBCDataSource
         return null;
     }
 
-    private class OracleOutputReader implements DBCServerOutputReader {
+    private class xuguOutputReader implements DBCServerOutputReader {
         @Override
         public boolean isServerOutputEnabled() {
             return getContainer().getPreferenceStore().getBoolean(XuguConstants.PREF_DBMS_OUTPUT);
@@ -780,14 +780,14 @@ public class XuguDataSource extends JDBCDataSource
         }
 
         public void enableServerOutput(DBRProgressMonitor monitor, DBCExecutionContext context, boolean enable) throws DBCException {
-            String sql = enable ?
-                "BEGIN DBMS_OUTPUT.ENABLE(" + XuguConstants.MAXIMUM_DBMS_OUTPUT_SIZE + "); END;" :
-                "BEGIN DBMS_OUTPUT.DISABLE; END;";
-            try (DBCSession session = context.openSession(monitor, DBCExecutionPurpose.UTIL, (enable ? "Enable" : "Disable ") + "DBMS output")) {
-                JDBCUtils.executeSQL((JDBCSession) session, sql);
-            } catch (SQLException e) {
-                throw new DBCException(e, XuguDataSource.this);
-            }
+//            String sql = enable ?
+//                "BEGIN DBMS_OUTPUT.ENABLE(" + XuguConstants.MAXIMUM_DBMS_OUTPUT_SIZE + "); END;" :
+//                "BEGIN DBMS_OUTPUT.DISABLE; END;";
+//            try (DBCSession session = context.openSession(monitor, DBCExecutionPurpose.UTIL, (enable ? "Enable" : "Disable ") + "DBMS output")) {
+//                JDBCUtils.executeSQL((JDBCSession) session, sql);
+//            } catch (SQLException e) {
+//                throw new DBCException(e, XuguDataSource.this);
+//            }
         }
 
         @Override
@@ -823,37 +823,37 @@ public class XuguDataSource extends JDBCDataSource
         @Override
         protected JDBCStatement prepareObjectsStatement(@NotNull JDBCSession session, @NotNull XuguDataSource owner) throws SQLException {
             StringBuilder schemasQuery = new StringBuilder();
-            boolean manyObjects = "false".equals(owner.getContainer().getConnectionConfiguration().getProviderProperty(XuguConstants.PROP_CHECK_SCHEMA_CONTENT));
-            schemasQuery.append("SELECT U.* FROM ").append(XuguUtils.getAdminAllViewPrefix(session.getProgressMonitor(), owner, "USERS")).append(" U\n");
-
+//            boolean manyObjects = "false".equals(owner.getContainer().getConnectionConfiguration().getProviderProperty(XuguConstants.PROP_CHECK_SCHEMA_CONTENT));
+//            schemasQuery.append("SELECT U.* FROM ").append(XuguUtils.getAdminAllViewPrefix(session.getProgressMonitor(), owner, "USERS")).append(" U\n");
+//
 //                if (owner.isAdmin() && false) {
 //                    schemasQuery.append(
 //                        "WHERE (U.USER_ID IN (SELECT DISTINCT OWNER# FROM SYS.OBJ$) ");
 //                } else {
-            schemasQuery.append(
-                "WHERE (");
-            if (manyObjects) {
-                schemasQuery.append("U.USERNAME IS NOT NULL");
-            } else {
-                schemasQuery.append("U.USERNAME IN (SELECT DISTINCT OWNER FROM ").append(XuguUtils.getAdminAllViewPrefix(session.getProgressMonitor(), owner, "OBJECTS")).append(")");
-            }
+//            schemasQuery.append(
+//                "WHERE (");
+//            if (manyObjects) {
+//                schemasQuery.append("U.USERNAME IS NOT NULL");
+//            } else {
+//                schemasQuery.append("U.USERNAME IN (SELECT DISTINCT OWNER FROM ").append(XuguUtils.getAdminAllViewPrefix(session.getProgressMonitor(), owner, "OBJECTS")).append(")");
+//            }
 //                }
 
-            DBSObjectFilter schemaFilters = owner.getContainer().getObjectFilter(XuguSchema.class, null, false);
-            if (schemaFilters != null) {
-                JDBCUtils.appendFilterClause(schemasQuery, schemaFilters, "U.USERNAME", false);
+//            DBSObjectFilter schemaFilters = owner.getContainer().getObjectFilter(XuguSchema.class, null, false);
+//            if (schemaFilters != null) {
+//                JDBCUtils.appendFilterClause(schemasQuery, schemaFilters, "U.USERNAME", false);
+//            }
+//            schemasQuery.append(")");
+            if (!CommonUtils.isEmpty(owner.activeSchemaName)) {
+//            schemasQuery.append("\nUNION ALL SELECT '").append(owner.activeSchemaName).append("' AS USERNAME FROM DUAL");
+            schemasQuery.append(XuguExecuteSQL_SYSDBA.gui_dialog_create_CreateRealJobDialog_schema);
             }
-            schemasQuery.append(")");
-            //if (!CommonUtils.isEmpty(owner.activeSchemaName)) {
-            //schemasQuery.append("\nUNION ALL SELECT '").append(owner.activeSchemaName).append("' AS USERNAME FROM DUAL");
-            //}
-            //schemasQuery.append("\nORDER BY USERNAME");
+//            schemasQuery.append("\nORDER BY USERNAME");
 
-            JDBCPreparedStatement dbStat = session.prepareStatement(schemasQuery.toString());
-
-            if (schemaFilters != null) {
-                JDBCUtils.setFilterParameters(dbStat, 1, schemaFilters);
-            }
+              JDBCPreparedStatement dbStat = session.prepareStatement(schemasQuery.toString());
+//            if (schemaFilters != null) {
+//                JDBCUtils.setFilterParameters(dbStat, 1, schemaFilters);
+//            }
             return dbStat;
         }
 
@@ -878,7 +878,7 @@ public class XuguDataSource extends JDBCDataSource
         protected JDBCStatement prepareObjectsStatement(@NotNull JDBCSession session, @NotNull XuguDataSource owner) throws SQLException {
             return session.prepareStatement(
                 "SELECT " + XuguUtils.getSysCatalogHint(owner.getDataSource()) + " * FROM " +
-                    XuguUtils.getAdminAllViewPrefix(session.getProgressMonitor(), owner, "TYPES") + " WHERE OWNER IS NULL ORDER BY TYPE_NAME");
+                   XuguUtils.getAdminAllViewPrefix(session.getProgressMonitor(), owner, "TYPES") + " WHERE OWNER IS NULL ORDER BY TYPE_NAME");
         }
 
         @Override

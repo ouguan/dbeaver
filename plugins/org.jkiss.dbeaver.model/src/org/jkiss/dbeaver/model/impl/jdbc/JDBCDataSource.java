@@ -143,9 +143,9 @@ public abstract class JDBCDataSource
             DBRRunnableWithProgress connectTask = monitor1 -> {
                 try {
                     if (driverInstanceFinal == null) {
-                        connection[0] = DriverManager.getConnection(url, connectProps);
+                    	connection[0] = DriverManager.getConnection(url,connectProps);
                     } else {
-                        connection[0] = driverInstanceFinal.connect(url, connectProps);
+                    	connection[0] = driverInstanceFinal.connect(url, connectProps);
                     }
                 } catch (Exception e) {
                     error[0] = e;
@@ -190,13 +190,13 @@ public abstract class JDBCDataSource
         // Set properties
         Properties connectProps = new Properties();
 
-        {
-            // Use properties defined by datasource itself
-            Map<String,String> internalProps = getInternalConnectionProperties(monitor, getContainer().getDriver(), purpose, connectionInfo);
-            if (internalProps != null) {
-                connectProps.putAll(internalProps);
-            }
-        }
+//        {
+//            // Use properties defined by datasource itself
+//            Map<String,String> internalProps = getInternalConnectionProperties(monitor, getContainer().getDriver(), purpose, connectionInfo);
+//            if (internalProps != null) {
+//                connectProps.putAll(internalProps);
+//            }
+//        }
 
         {
             // Use driver properties

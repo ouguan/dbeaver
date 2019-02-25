@@ -98,7 +98,7 @@ public abstract class JDBCObjectCache<OWNER extends DBSObject, OBJECT extends DB
             try (JDBCSession session = DBUtils.openMetaSession(monitor, owner, "Load objects from " + owner.getName())) {
                 try (JDBCStatement dbStat = prepareObjectsStatement(session, owner)) {
                     monitor.subTask("Load " + getCacheName());
-                    dbStat.setFetchSize(DBConstants.METADATA_FETCH_SIZE);
+//                    dbStat.setFetchSize(DBConstants.METADATA_FETCH_SIZE);
                     dbStat.executeStatement();
                     JDBCResultSet dbResult = dbStat.getResultSet();
                     if (dbResult != null) {

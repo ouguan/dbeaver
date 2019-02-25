@@ -18,6 +18,8 @@ package org.jkiss.dbeaver.ext.xugu.model;
 
 import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.Log;
+import org.jkiss.dbeaver.ext.xugu.XuguExecuteSQL_SYSDBA;
+import org.jkiss.dbeaver.ext.xugu.XuguMessages;
 import org.jkiss.dbeaver.ext.xugu.model.source.XuguSourceObject;
 import org.jkiss.dbeaver.ext.xugu.model.source.XuguStatefulObject;
 import org.jkiss.dbeaver.model.*;
@@ -145,7 +147,7 @@ public class XuguUtils {
     public static String getCurrentSchema(JDBCSession session) throws SQLException {
         return JDBCUtils.queryString(
             session,
-            "SELECT SYS_CONTEXT( 'USERENV', 'CURRENT_SCHEMA' ) FROM DUAL");
+            XuguExecuteSQL_SYSDBA.gui_dialog_create_CreateRealJobDialog_schema);
     }
 
     public static String normalizeSourceName(XuguSourceObject object, boolean body)

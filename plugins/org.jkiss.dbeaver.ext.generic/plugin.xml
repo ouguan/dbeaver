@@ -1131,18 +1131,7 @@
                         webURL="https://documentation.progress.com/output/ua/OpenEdge_latest/dmsdv/connecting-from-a-java-application-using-a-url.html#">
                 </driver>
                 <!-- Xugu SQL Server -->
-                <driver
-                    id="xugu"
-                    label="Xugu"
-                    icon="icons/xugu_icon.png"
-                    class="com.xugu.cloudjdbc.Driver"
-                    sampleURL="jdbc:xugu://{host}[:{port}]/{database}"
-                    defaultPort="5138"
-                    webURL="https://github.com/xugu-publish/jdbc-driver"
-                    description="Xugu JDBC driver">
-
-                    <file type="jar" path="https://github.com/xugu-publish/jdbc-driver/blob/master/libsrc/cloudjdbc-10.0.0.jar"/>
-                </driver>
+             
             </drivers>
 
         </datasource>
